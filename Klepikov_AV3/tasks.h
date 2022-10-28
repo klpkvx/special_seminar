@@ -45,7 +45,7 @@ double task07 (double (*function) (double), double a, double b, double eps,
                double *x);
 
 double task08 (double (*function) (double), double x0, double eps, double *x);
-double task09 (double (*function) (double), double a, double b, double eps,
-               double *x);
+int task09 (double (*function) (double), double a, double b, double eps,
+            double *x);
 
 #endif // TASKS_H

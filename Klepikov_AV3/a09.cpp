@@ -47,7 +47,7 @@ main (int argc, char *argv[])
   t = clock ();
   it = task09 (function, a, b, eps, &x);
   t = (clock () - t) / CLOCKS_PER_SEC;
-  if (it < 0 || (k == 0 && eps <= 1))
+  if (it < 0)
     {
       printf ("Solution is not exist!\n");
       return -3;

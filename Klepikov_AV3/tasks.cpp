@@ -365,78 +365,121 @@ task08 (double (*function) (double), double x0, double eps, double *x)
   return -1;
 }
 
+#define MX100k 100000
 
-double
+int
 task09 (double (*function) (double), double a, double b, double eps, double *x)
 {
-  double value_a = (*function) (a);
-  double value_b = (*function) (b);
-  double y = 0, value_y = 0;
-  double mid = 0.5 * (a + b);
-  double value_mid = (*function) (mid);
-  double f_a = 0, f_b = 0;
-  double f_mid = 0, f_y = 0;
+  double x_0 = a, x_1 = (a + b) * 0.5, x_2 = b;
+  double f_0 = (*function) (x_0), f_1 = (*function) (x_1),
+         f_2 = (*function) (x_2);
+  int it = 0;
+  double x4 = 0;
+  double y_1 = 0, y_0 = 0;
+  double y10 = 0, y21 = 0, y21_10 = 0;
+  double s = 0;
 
-  if (fabs (value_a) < eps)
+  y_0 = f_1;
+  for (it = 1; it < MX100k; it++)
     {
-      *x = a;
-      return 0;
-    }
+      s = x_1 - x_0;
+      if (fabs (s) < eps)
+        {
+          it = MX100k;
+          break;
+        }
+      y10 = (f_1 - f_0) / s;
+      s = x_2 - x_1;
+      if (fabs (s) < eps)
+        {
+          it = MX100k;
+          break;
+        }
+      y21 = (f_2 - f_1) / s;
+      s = x_2 - x_0;
+      if (fabs (s) < eps)
+        {
+          it = MX100k;
+          break;
+        }
 
-  if (fabs (value_b) < eps)
-    {
-      *x = b;
-      return 0;
-    }
+      y21_10 = (y21 - y10) / s;
+      if (fabs (y21_10) < eps)
+        {
+          it = MX100k;
+          break;
+        }
 
-  if (fabs (value_mid) < eps)
-    {
-      *x = mid;
-      return 0;
-    }
-
-  for (int it = 1; it <= MXIT; it++)
-    {
-      if (fabs (value_b - value_a) < eps || fabs (value_mid - value_b) < eps
-          || fabs (value_mid - value_a) < eps)
+      x4 = 0.5 * ((x_0 + x_1) - y10 / y21_10);
+      y_1 = (*function) (x4);
+      if (fabs (y_1 - y_0) < eps)
+        break;
+      y_0 = y_1;
+      if (f_0 <= f_1)
         {
-          return -1;
-        }
-      y = a - value_a * (b - a) / (value_b - value_a)
-          + value_a * value_b
-                * ((mid - b) / (value_mid - value_b)
-                   - (b - a) / (value_b - value_a))
-                / (value_mid - value_a);
-      value_y = (*function) (y);
-      if (fabs (value_y) < eps)
-        {
-          *x = y;
-          return it;
-        }
-      f_a = fabs (value_a);
-      f_b = fabs (value_b);
-      f_mid = fabs (value_mid);
-      f_y = fabs (value_y);
-      if (f_a > f_b && f_a > f_mid && f_a > f_y)
-        {
-          a = y;
-          value_a = value_y;
-          continue;
-        }
-      if (f_b > f_mid && f_b >= f_y)
-        {
-          b = y;
-          value_b = value_y;
-          continue;
-        }
-      if (f_mid > f_y)
-        {
-          mid = y;
-          value_mid = value_y;
-          continue;
+          if (f_0 <= f_2)
+            {
+              if (y_1 <= f_0)
+                {
+                  it = MX100k;
+                  break;
+                }
+              else
+                {
+                  f_0 = y_1;
+                  x_0 = x4;
+                }
+            }
+          else
+            {
+              if (y_1 <= f_2)
+                {
+                  it = MX100k;
+                  break;
+                }
+              else
+                {
+                  f_2 = y_1;
+                  x_2 = x4;
+                }
+            }
         }
       else
-        return -1;
+        {
+          if (f_1 <= f_2)
+            {
+              if (y_1 <= f_1)
+                {
+                  it = MX100k;
+                  break;
+                }
+              else
+                {
+                  f_1 = y_1;
+                  x_1 = x4;
+                }
+            }
+          else
+            {
+              if (y_1 <= f_2)
+                {
+                  it = MX100k;
+                  break;
+                }
+              else
+                {
+                  f_2 = y_1;
+                  x_2 = x4;
+                }
+            }
+        }
     }
-  return -1;
+
+  if (it < MX100k)
+    {
+      *x = x4;
+      return it;
+    }
+  else
+    return -1;
 }
