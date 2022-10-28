@@ -15,7 +15,7 @@ void print_array_b (double *a, int n, int p);
 void print_array_c (double *a, int n, int p);
 
 double f (int s, int n, int i);
-double fabs_ (double a_2, double b_2);
+int fdiff (double x1, double x2);
 
 int euclidean_algorithm (int a, int b);
 int get_bits (unsigned int x, unsigned int i, unsigned int *check);

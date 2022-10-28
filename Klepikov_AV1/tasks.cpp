@@ -43,6 +43,11 @@ f (int s, int n, int i)
 
   return 0;
 }
+int
+fdiff (double x1, double x2)
+{
+  return fabs (x2 - x1) < 1e-16;
+}
 
 int
 read_array (double *array, int n, const char *filename)
@@ -424,8 +429,6 @@ task06 (double *array, int n, int k)
   return size;
 }
 
-
-
 int
 task07 (double *array, int n, const char *b)
 {
@@ -559,7 +562,7 @@ task08 (double *a, double *b, double *c, int n1, int n2)
 
   return count;
 }
-jj
+
 int
 get_bits (unsigned int x, unsigned int i, unsigned int *check)
 {
@@ -667,135 +670,102 @@ task01 (const char *filename, unsigned int k)
   return result;
 }
 
-double
-fabs_ (double a_2, double b_2)
-{
-  if (a_2 - b_2 >= 0)
-    return a_2 - b_2;
-  else
-    return b_2 - a_2;
-  return 0;
-}
-
 int
 task02 (const char *filename_a, const char *filename_b)
 {
   FILE *file_a = NULL;
   FILE *file_b = NULL;
+  int flag = 1;
   double a_1 = 0, a_2 = 0, a_3 = 0;
-  double b_1 = 0, b_2 = 0, b_3 = 0;
-  double sum = 0;
-  int flag = 0;
-  double eps = 1e-14;
+  double b_1 = 0, b_2 = 0;
 
-  file_a = fopen (filename_a, "rt");
+  file_a = fopen (filename_a, "r");
   if (!file_a)
     {
       fprintf (stderr, "Cannot open %s\n", filename_a);
       return -1;
     }
 
-  file_b = fopen (filename_b, "rt");
-
+  file_b = fopen (filename_b, "r");
   if (!file_b)
     {
       fprintf (stderr, "Cannot open %s\n", filename_b);
       fclose (file_a);
       return -1;
     }
+
   if (fscanf (file_b, "%lf", &b_1) != 1)
     {
       if (!feof (file_b))
         {
-          fclose (file_b);
           fclose (file_a);
+          fclose (file_b);
           return -2;
         }
+      fclose (file_a);
+      fclose (file_b);
+      return 1;
+    }
+  if (fscanf (file_b, "%lf", &b_1) != 1)
+    {
+      if (!feof (file_b))
+        {
+          fclose (file_a);
+          fclose (file_b);
+          return -2;
+        }
+      fclose (file_a);
+      fclose (file_b);
+      return 1;
+    }
 
+  if (fscanf (file_a, "%lf", &a_1) != 1)
+    {
+      flag = 0;
+    }
+  if (fscanf (file_a, "%lf", &a_2) != 1)
+    {
+      flag = 0;
+    }
+  while (fscanf (file_b, "%lf", &b_2) == 1)
+    {
+      if (flag == 0)
+        {
+          fclose (file_a);
+          fclose (file_b);
+          return -3;
+        }
+      if ((fscanf (file_a, "%lf", &a_3) != 1))
+        {
+          if (!feof (file_a))
+            {
+              fclose (file_a);
+              fclose (file_b);
+              return -3;
+            }
+          fclose (file_a);
+          fclose (file_b);
+          return 0;
+        }
+      if (fdiff (b_1, (a_1 + a_3) / 2) == 0)
+        {
+          fclose (file_b);
+          fclose (file_a);
+          return 0;
+        }
+      a_1 = a_2;
+      a_2 = a_3;
+      b_1 = b_2;
+    }
+
+  if (!feof (file_b))
+    {
       fclose (file_b);
       fclose (file_a);
       return -3;
     }
 
-  if (fscanf (file_a, "%lf", &a_1) != 1)
-    {
-      if (!feof (file_a))
-        {
-          fclose (file_a);
-          fclose (file_b);
-          return -2;
-        }
-
-      fclose (file_a);
-      fclose (file_b);
-      return 1;
-    }
-
-  if (fscanf (file_b, "%lf", &b_2) != 1)
-    {
-      if (!feof (file_b))
-        {
-          fclose (file_b);
-          fclose (file_a);
-          return -2;
-        }
-
-      fclose (file_b);
-      fclose (file_a);
-      return 1;
-    }
-
-  if (fscanf (file_a, "%lf", &a_2) != 1)
-    {
-      if (!feof (file_b))
-        {
-          fclose (file_b);
-          fclose (file_a);
-          return -2;
-        }
-
-      fclose (file_a);
-      fclose (file_b);
-      return 1;
-    }
-
-  while (fscanf (file_a, "%lf", &a_3) == 1
-         && fscanf (file_b, "%lf", &b_3) == 1)
-    {
-      flag++;
-      sum = a_1 + a_3;
-      if (fabs_ (2 * b_2, sum) >= eps)
-        {
-          fclose (file_a);
-          fclose (file_b);
-          return 0;
-        }
-
-      a_1 = a_2;
-      a_2 = a_3;
-      b_2 = b_3;
-    }
-
-  if (!flag)
-    return 1;
-
-  if (fscanf (file_b, "%lf", &b_3) == 1)
-    {
-      fclose (file_b);
-      fclose (file_a);
-      return 0;
-    }
-  else
-    {
-      if (!feof (file_b))
-        {
-          fclose (file_b);
-          fclose (file_a);
-          return -2;
-        }
-
-      fclose (file_b);
-      fclose (file_a);
-      return 1;
-    }
+  fclose (file_a);
+  fclose (file_b);
+  return 1;
 }
