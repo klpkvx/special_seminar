@@ -32,4 +32,12 @@ int task06 (const char *filename_a, const char *filename_b,
             const char *string);
 int is_okay_task6 (const char *curr_str, const char *string);
 
+int task07 (const char *filename_a, const char *filename_b,
+            const char *string);
+int task08 (const char *filename_a, const char *filename_b,
+            const char *string);
+
+int task09 (const char *filename_a, const char *filename_b,
+            const char *string);
+int is_okay_task9 (const char *string, const char *buf);
 #endif // TASKS_H

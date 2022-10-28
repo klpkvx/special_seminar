@@ -19,7 +19,7 @@ main (int argc, const char *argv[])
   string = argv[3];
 
   t = clock ();
-  res = task05 (filename_a, filename_b, string);
+  res = task08 (filename_a, filename_b, string);
   t = (clock () - t) / CLOCKS_PER_SEC;
 
   if (res < 0)

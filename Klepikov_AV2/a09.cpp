@@ -3,7 +3,7 @@
 int
 main (int argc, const char *argv[])
 {
-  int task = 1;
+  int task = 9;
   const char *filename_a = NULL, *filename_b = NULL, *string = NULL;
   int res = 0;
   double t = 0;
@@ -19,7 +19,7 @@ main (int argc, const char *argv[])
   string = argv[3];
 
   t = clock ();
-  res = task01 (filename_a, filename_b, string);
+  res = task09 (filename_a, filename_b, string);
   t = (clock () - t) / CLOCKS_PER_SEC;
 
   if (res < 0)
